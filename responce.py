@@ -6,12 +6,23 @@ import time
 
 
 def get_json(name):
-    # GET /tlds/ajax.php?cmd=search&columns=id,name,zoneid,length,idn,thedate,&ecf=name&ecv=~%25vtb%25&days=2&mode=added&_search=false&nd=1631880373670&rows=500&page=1&sidx=length&sord=asc HTTP/1.1
+    #GET /tlds/ajax.php?cmd=search&columns=id,name,zoneid,length,idn,thedate,&ecf=name&ecv=~%25vtb%25&days=2&mode=added&_search=false&nd=1631880373670&rows=500&page=1&sidx=length&sord=asc HTTP/1.1
+    i = 5
+    count = 0
+
+    r = requests.get('https://dnpedia.com/tlds/search.php/')
+    for c in r.cookies:
+        new_session = (c.name+'='+c.value)
+
     headers = dict()
-    with open("headers", "r") as f:
+    with open("headers.txt", "r") as f:
         for line in f.readlines():
-            key, value = line.strip('\n').split(': ')
-            headers[key] = value
+            if 'Cookie' in line:
+                key, new_session = line.strip('\n').split(': ')
+                headers[key] = new_session
+            else:
+                key, value = line.strip('\n').split(': ')
+                headers[key] = value
 
     params = {
         'cmd': 'search',
@@ -36,9 +47,16 @@ def get_json(name):
                 pprint.pprint((json.dumps(r.json())))
                 break
         except requests.exceptions.HTTPError:
-            print("oops 503 Service Unavailable")
-            print('Wait 5 seconds!')
-            time.sleep(5)
+            count += 1
+            if count < 6:
+                print("oops 503 Service Unavailable")
+                print('Wait', i, 'seconds!')
+                time.sleep(i)
+            else:
+                i = 10
+                print("oops 503 Service Unavailable")
+                print('Wait', i, 'seconds!')
+                time.sleep(i)
 
 
 if __name__ == '__main__':
