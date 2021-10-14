@@ -6,7 +6,7 @@
 # Download
 
 ```console
-git clone https://github.com/AmaSus01/dnpedia.git
+git clone https://github.com/sakyra01/dnpedia.git
 ```
 # Installation and work
 1. Install the required packages from requrements:
